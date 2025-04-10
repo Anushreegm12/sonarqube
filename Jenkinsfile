@@ -27,6 +27,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQubeServer') {
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh 'curl -sSf $SONAR_HOST_URL/api/system/status || echo "SonarQube not reachable"'
                         sh '''
                         mvn sonar:sonar \
                             -Dsonar.projectKey=anushree-java-microservice \
