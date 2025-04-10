@@ -27,19 +27,25 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQubeServer') {
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh 'curl -sSf $SONAR_HOST_URL/api/system/status || echo "SonarQube not reachable"'
                         sh '''
-                        mvn sonar:sonar \
+                        echo "SonarQube Host: $SONAR_HOST_URL"
+                        echo "Checking connectivity..."
+                        curl -sSf $SONAR_HOST_URL/api/system/status || echo "SonarQube not reachable"
+        
+                        echo "Running Sonar Scanner..."
+                        mvn -X sonar:sonar \
                             -Dsonar.projectKey=anushree-java-microservice \
                             -Dsonar.projectName="Anushree Java Microservice" \
                             -Dsonar.projectVersion=1.0 \
-                            -Dsonar.host.url=http://192.168.147.128:9000 \
+                            -Dsonar.sources=src/main/java \
+                            -Dsonar.tests=src/test/java \
                             -Dsonar.login=$SONAR_TOKEN
                         '''
                     }
                 }
             }
         }
+
 
         stage('Quality Gate') {
             steps {
