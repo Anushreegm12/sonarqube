@@ -20,14 +20,15 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQubeServer') {
-                    withCredentials([string(credentialsId: 'SonarQubeServer', variable: 'SONAR_TOKEN')]) {
-                        sh 'mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN'
+        steps {
+            withSonarQubeEnv('SonarQubeServer') {
+                withCredentials([string(credentialsId: 'SonarQubeServer', variable: 'SONAR_TOKEN')]) {
+                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN'
                     }
                 }
             }
         }
+
 
         stage('Quality Gate') {
             steps {
