@@ -1,15 +1,15 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven 3.8.6'
+    }
+
     environment {
         IMAGE_NAME = "anushreegm12/java-microservice1"
         SONARQUBE_ENV = 'SonarQubeServer' 
     }
-
-    tools {
-        maven 'Maven 3.8.6' 
-    }
-
+    
     stages {
         stage('Checkout Code') {
             steps {
@@ -31,10 +31,8 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv("${SONARQUBE_ENV}") {
-                    withCredentials([string(credentialsId: 'SonarQubeServer', variable: 'SONAR_TOKEN')]) {
-                        sh 'mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN}'
-                    }
+                withSonarQubeEnv('SonarQubeServer') {
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
@@ -47,22 +45,14 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker Build & Push') {
             when {
                 branch 'develop'
             }
             steps {
-                sh "docker build -t ${IMAGE_NAME} ."
-            }
-        }
-
-        stage('Push to DockerHub') {
-            when {
-                branch 'develop'
-            }
-            steps {
+                sh 'docker build -t anushreegm12/java-microservice1 .'
                 withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
-                    sh "docker push ${IMAGE_NAME}"
+                    sh 'docker push anushreegm12/java-microservice1'
                 }
             }
         }
@@ -72,10 +62,10 @@ pipeline {
                 branch 'develop'
             }
             steps {
-                sh '''
+                sh """
                 kubectl apply -f k8s/deployment.yaml
                 kubectl apply -f k8s/service.yaml
-                '''
+                """
             }
         }
     }
