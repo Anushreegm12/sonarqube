@@ -7,9 +7,9 @@ pipeline {
 
     environment {
         IMAGE_NAME = "anushreegm12/java-microservice1"
-        SONARQUBE_ENV = 'SonarQubeServer' 
+        IMAGE_TAG = "${BUILD_NUMBER}" // Optional: Add Git SHA for better versioning
     }
-    
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -17,15 +17,9 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build and Test') {
             steps {
-                sh 'mvn clean package -DskipTests=false'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'mvn test'
+                sh 'mvn clean verify'
             }
         }
 
@@ -33,13 +27,17 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQubeServer') {
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh 'mvn clean verify sonar:sonar -Dsonar.login=$SONAR_TOKEN'
+                        sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=anushree-java-microservice \
+                        -Dsonar.projectName="Anushree Java Microservice" \
+                        -Dsonar.projectVersion=1.0 \
+                        -Dsonar.login=$SONAR_TOKEN
+                        '''
                     }
                 }
             }
         }
-
-
 
         stage('Quality Gate') {
             steps {
@@ -54,9 +52,9 @@ pipeline {
                 branch 'develop'
             }
             steps {
-                sh 'docker build -t anushreegm12/java-microservice1 .'
+                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
                 withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
-                    sh 'docker push anushreegm12/java-microservice1'
+                    sh 'docker push ${IMAGE_NAME}:${IMAGE_TAG}'
                 }
             }
         }
