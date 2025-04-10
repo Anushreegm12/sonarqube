@@ -33,12 +33,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQubeServer') {
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh """
-                        mvn sonar:sonar \
-                            -Dsonar.projectKey=java-microservice \
-                            -Dsonar.projectName="Java Microservice" \
-                            -Dsonar.login=${SONAR_TOKEN}
-                        """
+                        sh 'mvn clean verify sonar:sonar -Dsonar.login=$SONAR_TOKEN'
                     }
                 }
             }
