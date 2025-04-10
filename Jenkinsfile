@@ -5,15 +5,13 @@ pipeline {
         IMAGE_NAME = "anushreegm12/java-microservice1"
         SONARQUBE_ENV = 'SonarQubeServer' 
     }
-
+    
     stages {
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/Anushreegm12/sonarqube.git'
             }
         }
-
-    stages {
         stage('Build') {
             steps {
                 sh 'mvn clean package -DskipTests=false'
