@@ -9,17 +9,17 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-
-        <!-- SonarQube configuration -->
-        <sonar.projectKey>anushree-java-microservice</sonar.projectKey>
-        <sonar.projectName>Anushree Java Microservice</sonar.projectName>
-        <sonar.projectVersion>1.0</sonar.projectVersion>
-        <sonar.host.url>http://localhost:9000</sonar.host.url>
-        <!-- Token should still be injected via Jenkins and passed using -Dsonar.login=$SONAR_TOKEN -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-        <!-- Add any necessary dependencies -->
+        <!-- Example test dependency -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
