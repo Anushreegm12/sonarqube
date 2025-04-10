@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "anushreegm12/java-microservice1"
-        IMAGE_TAG = "${BUILD_NUMBER}" // Optional: Add Git SHA for better versioning
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
@@ -29,10 +29,11 @@ pipeline {
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
                         sh '''
                         mvn sonar:sonar \
-                        -Dsonar.projectKey=anushree-java-microservice \
-                        -Dsonar.projectName="Anushree Java Microservice" \
-                        -Dsonar.projectVersion=1.0 \
-                        -Dsonar.login=$SONAR_TOKEN
+                            -Dsonar.projectKey=anushree-java-microservice \
+                            -Dsonar.projectName="Anushree Java Microservice" \
+                            -Dsonar.projectVersion=1.0 \
+                            -Dsonar.host.url=http://192.168.147.128:9000 \
+                            -Dsonar.login=$SONAR_TOKEN
                         '''
                     }
                 }
@@ -64,10 +65,10 @@ pipeline {
                 branch 'develop'
             }
             steps {
-                sh """
+                sh '''
                 kubectl apply -f k8s/deployment.yaml
                 kubectl apply -f k8s/service.yaml
-                """
+                '''
             }
         }
     }
